@@ -1,0 +1,102 @@
+import cv2
+import numpy as np
+import serial
+import time
+import tkinter as tk
+from tkinter import Label, Button
+from PIL import Image, ImageTk
+
+class VideoApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Live Video with Tkinter")
+        
+        # Create a label for displaying the video
+        self.label = Label(self.root)
+        self.label.pack()
+        
+        # OpenCV Video Capture
+        self.cap = cv2.VideoCapture(0)
+        
+        # Buttons
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.pack()
+        
+        self.btn1 = Button(self.button_frame, text="Button 1")
+        self.btn1.pack(side=tk.LEFT)
+        self.btn1.bind('<ButtonPress>', lambda event: self.func1(True))
+        self.btn1.bind('<ButtonRelease>', lambda event: self.func1(False))
+        
+        self.btn2 = Button(self.button_frame, text="Button 2")
+        self.btn2.pack(side=tk.LEFT)
+        self.btn2.bind('<ButtonPress>', lambda event: self.func2(True))
+        self.btn2.bind('<ButtonRelease>', lambda event: self.func2(False))
+        
+        self.btn3 = Button(self.button_frame, text="Button 3")
+        self.btn3.pack(side=tk.LEFT)
+        self.btn3.bind('<ButtonPress>', lambda event: self.func3(True))
+        self.btn3.bind('<ButtonRelease>', lambda event: self.func3(False))
+        
+        self.btn4 = Button(self.button_frame, text="Button 4")
+        self.btn4.pack(side=tk.LEFT)
+        self.btn4.bind('<ButtonPress>', lambda event: self.func4(True))
+        self.btn4.bind('<ButtonRelease>', lambda event: self.func4(False))
+        
+        self.toggle_state = False
+        self.btn5 = Button(self.button_frame, text="Toggle Button", command=self.toggle_func)
+        self.btn5.pack(side=tk.LEFT)
+        
+        # Update the frame
+        self.update()
+        
+        # Close the application properly
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+    
+    def update(self):
+        ret, frame = self.cap.read()
+        if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(frame)
+            imgtk = ImageTk.PhotoImage(image=img)
+            self.label.imgtk = imgtk
+            self.label.configure(image=imgtk)
+        
+        # Call update every 10ms
+        self.root.after(10, self.update)
+    
+    def on_closing(self):
+        self.cap.release()
+        self.root.destroy()
+    
+    def func1(self, pressed):
+        if pressed:
+            print("Button 1 Held Down")
+        else:
+            print("Button 1 Released")
+    
+    def func2(self, pressed):
+        if pressed:
+            print("Button 2 Held Down")
+        else:
+            print("Button 2 Released")
+    
+    def func3(self, pressed):
+        if pressed:
+            print("Button 3 Held Down")
+        else:
+            print("Button 3 Released")
+    
+    def func4(self, pressed):
+        if pressed:
+            print("Button 4 Held Down")
+        else:
+            print("Button 4 Released")
+    
+    def toggle_func(self):
+        self.toggle_state = not self.toggle_state
+        print(f"Toggle Button State: {'ON' if self.toggle_state else 'OFF'}")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = VideoApp(root)
+    root.mainloop()
